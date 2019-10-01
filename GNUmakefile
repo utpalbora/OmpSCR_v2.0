@@ -28,8 +28,8 @@ help:
 	@echo "Usage:"
 	@echo
 	@echo " gmake config     - Information about how to configure your compiler details"
-	@echo " gmake bashconfig - Interactive compilers configuration (bash shell)" 
-	@echo " gmake ashconfig  - Interactive compilers configuration (ash shell)" 
+	@echo " gmake bashconfig - Interactive compilers configuration (bash shell)"
+	@echo " gmake ashconfig  - Interactive compilers configuration (ash shell)"
 	@echo
 	@echo " gmake all        - Will build all the versions of each application"
 	@echo " gmake seq        - Will build only the sequential versions of applications"
@@ -41,7 +41,7 @@ help:
 	@echo
 
 
-# 
+#
 # CONFIGURATION SCRIPT
 #
 config:
@@ -133,6 +133,3 @@ dist:
 	tar cphf ./$(DIST_NAME).tar --exclude=./$(DIST_NAME)/$(DIST_NAME) ./$(DIST_NAME)
 	gzip OmpSCR_v$(OSCR_VERSION).tar
 	rm -f ./$(DIST_NAME)
-						  
-
-

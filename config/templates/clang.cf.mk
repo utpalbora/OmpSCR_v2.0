@@ -14,24 +14,24 @@
 #
 # SECTION 1: C COMPILER
 #
-TOOL=gnu
+TOOL=clang
 
 #
 # 1.1. C compiler activation
 #	A value of "y" will enable C source code compilation
 #	A value of "n" will unable C source code compilation
 #
-OSCR_USE_C=n
+OSCR_USE_C=y
 
 #
 # 1.2. The name of your C compiler or front-end
 #
-OSCR_CC=
+OSCR_CC=clang-6.0
 
 #
 # 1.3. Flag/s needed to activate OpenMP pragmas recognition
 #
-OSCR_C_OMPFLAG=
+OSCR_C_OMPFLAG=-fopenmp
 
 #
 # 1.4. Flag/s needed for serial compilation (No OpenMP)
@@ -47,7 +47,7 @@ OSCR_C_REPORT=
 #
 # 1.6. (Optional) Other common flags (e.g. optimization)
 #
-OSCR_C_OTHERS=
+OSCR_C_OTHERS=-g
 
 
 
@@ -61,17 +61,17 @@ OSCR_C_OTHERS=
 #	A value of "y" will enable C++ source code compilation
 #	A value of "n" will unable C++ source code compilation
 #
-OSCR_USE_CPP=n
+OSCR_USE_CPP=y
 
 #
 # 2.2. The name of your C++ compiler or front-end
 #
-OSCR_CPPC=
+OSCR_CPPC=clang++-6.0
 
 #
 # 2.3. Flag/s needed to activate OpenMP pragmas recognition
 #
-OSCR_CPP_OMPFLAG=
+OSCR_CPP_OMPFLAG=-fopenmp
 
 #
 # 2.4. Flag/s needed for serial compilation (No OpenMP)
@@ -87,7 +87,7 @@ OSCR_CPP_REPORT=
 #
 # 2.6. (Optional) Other common flags (e.g. optimization)
 #
-OSCR_CPP_OTHERS=
+OSCR_CPP_OTHERS=-g
 
 
 ########################################
@@ -105,12 +105,12 @@ OSCR_USE_F=n
 #
 # 3.2. The name of your Frotran90/95 compiler or front-end
 #
-OSCR_FF=
+OSCR_FF=flang
 
 #
 # 3.3. Flag/s needed to activate OpenMP pragmas recognition
 #
-OSCR_F_OMPFLAG=
+OSCR_F_OMPFLAG=-fopenmp
 
 #
 # 3.4. Flag/s needed for serial compilation (No OpenMP)

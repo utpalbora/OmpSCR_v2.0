@@ -14,19 +14,19 @@
 #
 # SECTION 1: C COMPILER
 #
-TOOL=gnu
+TOOL=sword
 
 #
 # 1.1. C compiler activation
 #	A value of "y" will enable C source code compilation
 #	A value of "n" will unable C source code compilation
 #
-OSCR_USE_C=n
+OSCR_USE_C=y
 
 #
 # 1.2. The name of your C compiler or front-end
 #
-OSCR_CC=
+OSCR_CC=clang-sword
 
 #
 # 1.3. Flag/s needed to activate OpenMP pragmas recognition
@@ -61,12 +61,12 @@ OSCR_C_OTHERS=
 #	A value of "y" will enable C++ source code compilation
 #	A value of "n" will unable C++ source code compilation
 #
-OSCR_USE_CPP=n
+OSCR_USE_CPP=y
 
 #
 # 2.2. The name of your C++ compiler or front-end
 #
-OSCR_CPPC=
+OSCR_CPPC=clang-sword++
 
 #
 # 2.3. Flag/s needed to activate OpenMP pragmas recognition

@@ -12,6 +12,7 @@
 #
 # SECTION 1: C COMPILER
 #
+TOOL=sun
 
 #
 # 1.1. C compiler activation

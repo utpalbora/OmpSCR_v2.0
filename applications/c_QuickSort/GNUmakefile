@@ -41,11 +41,11 @@ EXTRA_MOD_F=
 # 6. DEBUG ( Default no )
 #    To include -DDDEBUG in the compilation line
 #	a) Override in command line: $ gmake DEBUG=yes
-# 	b) Or uncomment the following line 
+# 	b) Or uncomment the following line
 # DEBUG=yes
 
 #
-# END OF APPLICATION DEVELOPER SECTION 
+# END OF APPLICATION DEVELOPER SECTION
 # (DO NOT MODIFY BELOW THIS POINT, EXCEPT TO OVERRIDE COMMON COMPILER CONFIG)
 #
 

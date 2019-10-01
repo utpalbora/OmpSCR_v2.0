@@ -4,7 +4,7 @@
 #
 # COMPILER CONFIGURATION MAKEFILE
 #
-# This file include details about your C, C++ and/or Fortran90/95 compilers 
+# This file include details about your C, C++ and/or Fortran90/95 compilers
 # and compilation flags, common to all applications
 #
 ########################################
@@ -14,19 +14,19 @@
 #
 # SECTION 1: C COMPILER
 #
-TOOL=gnu
+TOOL=llov
 
 #
 # 1.1. C compiler activation
 #	A value of "y" will enable C source code compilation
 #	A value of "n" will unable C source code compilation
 #
-OSCR_USE_C=n
+OSCR_USE_C=y
 
 #
 # 1.2. The name of your C compiler or front-end
 #
-OSCR_CC=
+OSCR_CC=/home/utpal/LLVMOmpVerify/build/bin/clang -Xclang -load -Xclang /home/utpal/LLVMOmpVerify/build/lib/OpenMPVerify.so -Xclang -disable-O0-optnone -mllvm -polly-process-unprofitable -mllvm -polly-invariant-load-hoisting -mllvm -polly-ignore-parameter-bounds -mllvm -polly-dependences-on-demand -fopenmp
 
 #
 # 1.3. Flag/s needed to activate OpenMP pragmas recognition
@@ -61,12 +61,12 @@ OSCR_C_OTHERS=
 #	A value of "y" will enable C++ source code compilation
 #	A value of "n" will unable C++ source code compilation
 #
-OSCR_USE_CPP=n
+OSCR_USE_CPP=y
 
 #
 # 2.2. The name of your C++ compiler or front-end
 #
-OSCR_CPPC=
+OSCR_CPPC=/home/utpal/LLVMOmpVerify/build/bin/clang++ -Xclang -load -Xclang /home/utpal/LLVMOmpVerify/build/lib/OpenMPVerify.so -Xclang -disable-O0-optnone -mllvm -polly-process-unprofitable -mllvm -polly-invariant-load-hoisting -mllvm -polly-ignore-parameter-bounds -mllvm -polly-dependences-on-demand -fopenmp
 
 #
 # 2.3. Flag/s needed to activate OpenMP pragmas recognition

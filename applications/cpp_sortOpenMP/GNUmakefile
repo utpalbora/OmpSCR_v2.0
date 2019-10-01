@@ -29,6 +29,7 @@ EXES=cpp_qsomp1 cpp_qsomp2 cpp_qsomp3 cpp_qsomp4 cpp_qsomp5 cpp_qsomp6 cpp_qsomp
 # 2. (Optional) DEFINE USER LOCAL FLAGS HERE
 CFLAGS=
 CPPFLAGS=
+#-mllvm -always-inline
 FFLAGS=
 LIBS=
 
@@ -45,11 +46,11 @@ EXTRA_MOD_F=
 # 6. DEBUG ( Default no )
 #    To include -DDDEBUG in the compilation line
 #	a) Override in command line: $ gmake DEBUG=yes
-# 	b) Or uncomment the following line 
+# 	b) Or uncomment the following line
 # DEBUG=yes
 
 #
-# END OF APPLICATION DEVELOPER SECTION 
+# END OF APPLICATION DEVELOPER SECTION
 # (DO NOT MODIFY BELOW THIS POINT, EXCEPT TO OVERRIDE COMMON COMPILER CONFIG)
 #
 

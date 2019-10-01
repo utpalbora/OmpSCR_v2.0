@@ -15,9 +15,9 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License 
+#  You should have received a copy of the GNU General Public License
 #  (LICENSE file) along with this program; if not, write to
-#  the Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+#  the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 #  Boston, MA  02111-1307  USA
 #
 #*************************************************************************
@@ -42,7 +42,7 @@ SHELL=/bin/sh
 #
 
 # 1. DEFINE YOUR APPLICATION NAMES
-#    The name of the main source file, without extension 
+#    The name of the main source file, without extension
 #    REMEMBER: .par AND .seq SUFFIXES WILL BE ADDED AUTOMATICALLY
 #
 EXES=f_cell_solution1 f_cell_solution2 f_cell_solution3 f_cell_solution5 f_cell_solution6 f_cell_solution4 f_cell_solution7 f_cell_solution8
@@ -65,11 +65,11 @@ EXTRA_MOD_F=
 # 6. DEBUG ( Default no )
 #    To include -DDDEBUG in the compilation line
 #	a) Override in command line: $ gmake DEBUG=yes
-# 	b) Or uncomment the following line 
+# 	b) Or uncomment the following line
 # DEBUG=yes
 
 #
-# END OF APPLICATION DEVELOPER SECTION 
+# END OF APPLICATION DEVELOPER SECTION
 # (DO NOT MODIFY BELOW THIS POINT, EXCEPT TO OVERRIDE COMMON COMPILER CONFIG)
 #
 
