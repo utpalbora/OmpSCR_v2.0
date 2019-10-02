@@ -50,7 +50,7 @@ MODULE oscrCommon_f
 	character(len=1024),dimension(:),allocatable	:: oscrData_argNames
 	character(len=1024),dimension(:),allocatable	:: oscrData_argv
 
-	integer, external 	:: iargc
+	integer, intrinsic 	:: iargc
 	character(len=1024)	:: argsBuffer
 
 	! 3. TIMERS CONTROL
@@ -293,7 +293,7 @@ CONTAINS
 		call OSCR_GETARG_CHECK(ind)
 		
 		! 2. CONVERT ARG
-		read (oscrData_argv(ind),'(I)',iostat=ios) dummy
+		read (oscrData_argv(ind),'(l0)',iostat=ios) dummy
 
 		! 3. CHECK CONVERSION
 		if ( ios .ne. 0 ) then
@@ -315,7 +315,7 @@ CONTAINS
 		call OSCR_GETARG_CHECK(ind)
 		
 		! 2. CONVERT ARG
-		read (oscrData_argv(ind),'(F)',iostat=ios) dummy
+		read (oscrData_argv(ind),'(ES14.7)',iostat=ios) dummy
 
 		! 3. CHECK CONVERSION
 		if ( ios .ne. 0 ) then
@@ -337,7 +337,7 @@ CONTAINS
 		call OSCR_GETARG_CHECK(ind)
 		
 		! 2. CONVERT ARG
-		read (oscrData_argv(ind),'(F)',iostat=ios) dummy
+		read (oscrData_argv(ind),'(d17.10)',iostat=ios) dummy
 
 		! 3. CHECK CONVERSION
 		if ( ios .ne. 0 ) then
