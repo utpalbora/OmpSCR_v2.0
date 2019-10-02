@@ -184,8 +184,8 @@ template < typename T >
 #		pragma omp atomic
 		numBusyThreads += 2;
 
-#		pragma omp parallel shared(myVec, numThreads, numBusyThreads, \
-			switchThresh, q, i, r)
+#		pragma omp parallel shared(myVec, numBusyThreads, \
+			q, i, r)
 		{
 #			pragma omp sections nowait
 			{
