@@ -4,7 +4,7 @@
 #
 # COMPILER CONFIGURATION MAKEFILE
 #
-# This file include details about your C, C++ and/or Fortran90/95 compilers 
+# This file include details about your C, C++ and/or Fortran90/95 compilers
 # and compilation flags, common to all applications
 #
 ########################################

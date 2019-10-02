@@ -4,7 +4,7 @@
 #
 # COMPILER CONFIGURATION MAKEFILE
 #
-# This file include details about your C, C++ and/or Fortran90/95 compilers 
+# This file include details about your C, C++ and/or Fortran90/95 compilers
 # and compilation flags, common to all applications
 #
 ########################################
@@ -110,7 +110,7 @@ OSCR_FF=gfortran
 #
 # 3.3. Flag/s needed to activate OpenMP pragmas recognition
 #
-OSCR_F_OMPFLAG=
+OSCR_F_OMPFLAG=-fopenmp
 
 #
 # 3.4. Flag/s needed for serial compilation (No OpenMP)
@@ -126,7 +126,7 @@ OSCR_F_REPORT=
 #
 # 3.6. (Optional) Other common flags (e.g. optimization)
 #
-OSCR_F_OTHERS=
+OSCR_F_OTHERS=-g
 
 
 

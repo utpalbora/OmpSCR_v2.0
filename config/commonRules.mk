@@ -44,9 +44,6 @@ OUTPUTDIR=../../bin
 # Directory to store log files about compilation
 LOGDIR=../../log
 
-# Suffix of a log file containing the specific compilation line for a program
-COMPLINE_SUFFIX=compLine
-
 # Tool used for compiling or running the applications
 TOOL=gnu
 
@@ -66,6 +63,9 @@ OSCR_USE_CPP="n"
 OSCR_USE_F="n"
 
 -include ../../config/templates/user.cf.mk
+
+# Suffix of a log file containing the specific compilation line for a program
+COMPLINE_SUFFIX=$(TOOL).compLine
 
 #
 # 2. PAR, SEQ, ALL OBJECTIVE NAMES
@@ -165,19 +165,19 @@ FSEQFLAGS=$(OSCR_F_OMPSTUBSFLAG) $(OSCR_F_OTHERS)
 
 $(OUTPUTDIR)/%.par.$(TOOL) : %.f90 $(COMMON_DEP) $(EXTRA_MOD_F) $(COMMON_F)
 	@ echo "$(FC) $(FPARFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)" > $(LOGDIR)/$*.par.$(COMPLINE_SUFFIX)
-	$(FC) $(FPARFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)
+	$(FC) $(FPARFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS) > $(LOGDIR)/$*.par.$(TOOL).log 2>&1
 
 $(OUTPUTDIR)/%.par.$(TOOL) : %.f95 $(COMMON_DEP) $(EXTRA_MOD_F) $(COMMON_F)
 	@ echo "$(FC) $(FPARFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)" > $(LOGDIR)/$*.par.$(COMPLINE_SUFFIX)
-	$(FC) $(FPARFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)
+	$(FC) $(FPARFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS) > $(LOGDIR)/$*.par.$(TOOL).log 2>&1
 
 $(OUTPUTDIR)/%.seq.$(TOOL) : %.f90 $(COMMON_DEP) $(EXTRA_MOD_F) $(COMMON_F)
 	@ echo "$(FC) $(FSEQFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)" > $(LOGDIR)/$*.seq.$(COMPLINE_SUFFIX)
-	$(FC) $(FSEQFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)
+	$(FC) $(FSEQFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS) > $(LOGDIR)/$*.seq.$(TOOL).log 2>&1
 
 $(OUTPUTDIR)/%.seq.$(TOOL) : %.f95 $(COMMON_DEP) $(EXTRA_MOD_F) $(COMMON_F)
 	@ echo "$(FC) $(FSEQFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)" > $(LOGDIR)/$*.seq.$(COMPLINE_SUFFIX)
-	$(FC) $(FSEQFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS)
+	$(FC) $(FSEQFLAGS) $(FFLAGS) $(INCLUDE_FLAGS) -o $@ $< $(EXTRA_MOD_F) $(COMMON_F) $(LIBS) > $(LOGDIR)/$*.seq.$(TOOL).log 2>&1
 
 else
 
@@ -213,6 +213,8 @@ clean:
 	$(foreach name, $(ALL), rm -f $(name); )
 	$(foreach name, $(EXES), rm -f $(LOGDIR)/$(name).par.$(COMPLINE_SUFFIX); )
 	$(foreach name, $(EXES), rm -f $(LOGDIR)/$(name).seq.$(COMPLINE_SUFFIX); )
+	$(foreach name, $(EXES), rm -f $(LOGDIR)/$(name).par.$(TOOL).log; )
+	$(foreach name, $(EXES), rm -f $(LOGDIR)/$(name).seq.$(TOOL).log; )
 ifneq ($(EXTRA_MOD_C),)
 	rm -f $(EXTRA_MOD_C)
 endif
