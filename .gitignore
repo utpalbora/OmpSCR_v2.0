@@ -2,3 +2,4 @@ results
 *.log
 *.out
 *.o
+*.mod
