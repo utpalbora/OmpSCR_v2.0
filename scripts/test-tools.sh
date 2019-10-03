@@ -102,9 +102,6 @@ TESTPARAM="-test"
 ULIMITS=$(ulimit -s)
 ulimit -s unlimited
 
-# For the time being, fix number of threads to 72
-export OMP_NUM_THREADS=72
-
 for tool in "${TOOLS[@]}"; do
   LOGFILE=$LOG_DIR/${tool}.csv
 
@@ -117,84 +114,93 @@ for tool in "${TOOLS[@]}"; do
   SAVELOGS=$BACKUP_DIR/$tool
   mkdir -p $SAVELOGS
 
-  echo "tool,testcase,races,runtime,memory(rss),exitcode" > "$LOGFILE"
+  echo "tool,testcase,threads,races,runtime,memory(rss),exitcode" > "$LOGFILE"
 
-  timerStart=$(date +%s%6N)
+  compileStart=$(date +%s%6N)
   make par;
-  for exname in $(find bin -type f -name "*${tool}"); do
-    testname=${exname##*/}
-    runlog="$LOG_DIR/${testname}"
-    testname=${testname%.*.*}
-    logname="${runlog}.log"
-    OUTFLAGS=" -w ${runlog}.watch.log -v ${runlog}.var.log -o $logname "
+  compileEnd=$(date +%s%6N)
+  compileTime=$(echo "scale=3; ($compileEnd-$compileStart)/1000000"|bc);
+  for threads in "${OMPTHREADS[@]}"; do
+    timerStart=$(date +%s%6N)
+    export OMP_NUM_THREADS=$threads
+    for exname in $(find bin -type f -name "*${tool}"); do
+      testname=${exname##*/}
+      runlog="$LOG_DIR/${testname}"
+      testname=${testname%.*.*}
+      logname="${runlog}.log"
+      OUTFLAGS=" -w ${runlog}.watch.log -v ${runlog}.var.log -o $logname "
 
-    echo "Running $tool on $testname with arguments $TESTPARAM";
-    case $tool in
-      clang)
-        ;&
-      gnu)
-        ;&
-      intel)
-        $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
-        races="";;
-      drd)
-        $RUNCMD $RUNFLAGS $OUTFLAGS $VALGRIND --tool=drd --check-stack-var=yes "./$exname" $TESTPARAM;
-        races=$(grep -ce 'Conflicting .* by thread' $logname);;
-      inspxe-cl)
-        runtime_flags=" -collect ti3 -knob scope=extreme -knob stack-depth=16 -knob use-maximum-resources=true";
-        #runtime_flags=" -collect ti2";
-        $RUNCMD $RUNFLAGS $OUTFLAGS $INSPECTOR $runtime_flags -- "./$exname" $TESTPARAM;
-        races=$(grep 'Data race' $logname | sed -E 's/[[:space:]]*([[:digit:]]+).*/\1/');;
-      helgrind)
-        $RUNCMD $RUNFLAGS $OUTFLAGS $VALGRIND --tool=helgrind "./$exname" $TESTPARAM;
-        races=$(grep -ce 'Possible data race' $logname);;
-      llov)
-        races=$(grep -ce 'Data Race detected' $logname);;
-      romp)
-        $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
-        races=$(grep -ce 'race found!' $logname);;
-      sword)
-        if [[ -e "$LOG_DIR/sword_data" ]]; then
-          rm -rf "$LOG_DIR/sword_data";
-        fi;
-        if [[ -e "$LOG_DIR/sword_report" ]]; then
-          rm -rf "$LOG_DIR/sword_report";
-        fi;
-        $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM
-        instrtime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
-        $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_ANALYSIS --analysis-tool $SWORD_RACE_ANALYSIS --executable "$exname" --traces-path "$LOG_DIR/sword_data" --report-path "$LOG_DIR/sword_report"
-        analysistime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
-        $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_REPORT --executable "$exname" --report-path "$LOG_DIR/sword_report"
-        races=$(grep -ce 'WARNING: SWORD: data race' $logname);;
-      archer)
-        ;&
-      tsan-gcc)
-        ;&
-      tsan-llvm)
-        $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
-        races=$(grep -ce 'WARNING: ThreadSanitizer: data race' $logname);;
-    esac
-    mem=$(grep "maximum resident set size" ${runlog}.watch.log | sed -E 's/.*[[:space:]]([[:digit:]]+)/\1/')
-    runtime=$(grep "WCTIME=" ${runlog}.var.log | awk -F= '{ print $2 }');
-    runtime=$(echo "scale=3; ($runtime+${instrtime:-0}+${analysistime:-0})"|bc)
-    if [ ! -f ${runlog}.var.log ]; then
-      returncode=0;
-    elif [ $(grep -ce "^TIMEOUT=true" ${runlog}.var.log) -eq 0 ]; then
-      returncode=$(grep "EXITSTATUS=" ${runlog}.var.log | awk -F= '{ print $2 }');
-    else
-      returncode=$(grep "Child status" ${runlog}.watch.log | awk -F: '{ print $2 }');
-    fi
-    echo "$tool,$testname,${races:-0},$runtime,$mem,$returncode" >> "$LOGFILE"
-    mv "$logname" "${runlog}.var.log" "${runlog}.watch.log" -t "$SAVELOGS" 2> /dev/null
-    cp "$LOGFILE" "$BACKUP_DIR"
+      echo "Running $tool on $testname with arguments $TESTPARAM";
+      case $tool in
+        clang)
+          ;&
+        gnu)
+          ;&
+        intel)
+          $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
+          races="";;
+        drd)
+          $RUNCMD $RUNFLAGS $OUTFLAGS $VALGRIND --tool=drd --check-stack-var=yes "./$exname" $TESTPARAM;
+          races=$(grep -ce 'Conflicting .* by thread' $logname);;
+        inspxe-cl)
+          runtime_flags=" -collect ti3 -knob scope=extreme -knob stack-depth=16 -knob use-maximum-resources=true";
+          #runtime_flags=" -collect ti2";
+          $RUNCMD $RUNFLAGS $OUTFLAGS $INSPECTOR $runtime_flags -- "./$exname" $TESTPARAM;
+          races=$(grep 'Data race' $logname | sed -E 's/[[:space:]]*([[:digit:]]+).*/\1/');;
+        helgrind)
+          $RUNCMD $RUNFLAGS $OUTFLAGS $VALGRIND --tool=helgrind "./$exname" $TESTPARAM;
+          races=$(grep -ce 'Possible data race' $logname);;
+        llov)
+          races=$(grep -ce 'Data Race detected' $logname);
+          threads=1;;
+        romp)
+          $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
+          races=$(grep -ce 'race found!' $logname);;
+        sword)
+          if [[ -e "$LOG_DIR/sword_data" ]]; then
+            rm -rf "$LOG_DIR/sword_data";
+          fi;
+          if [[ -e "$LOG_DIR/sword_report" ]]; then
+            rm -rf "$LOG_DIR/sword_report";
+          fi;
+          $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM
+          instrtime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
+          $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_ANALYSIS --analysis-tool $SWORD_RACE_ANALYSIS --executable "$exname" --traces-path "$LOG_DIR/sword_data" --report-path "$LOG_DIR/sword_report"
+          analysistime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
+          $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_REPORT --executable "$exname" --report-path "$LOG_DIR/sword_report"
+          races=$(grep -ce 'WARNING: SWORD: data race' $logname);;
+        archer)
+          ;&
+        tsan-gcc)
+          ;&
+        tsan-llvm)
+          $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
+          races=$(grep -ce 'WARNING: ThreadSanitizer: data race' $logname);;
+      esac
+      if [ $tool != "llov" ]; then
+        mem=$(grep "maximum resident set size" ${runlog}.watch.log | sed -E 's/.*[[:space:]]([[:digit:]]+)/\1/')
+        runtime=$(grep "WCTIME=" ${runlog}.var.log | awk -F= '{ print $2 }');
+        runtime=$(echo "scale=3; ($runtime+${instrtime:-0}+${analysistime:-0})"|bc)
+        if [ $(grep -ce "^TIMEOUT=true" ${runlog}.var.log) -eq 0 ]; then
+          returncode=$(grep "EXITSTATUS=" ${runlog}.var.log | awk -F= '{ print $2 }');
+        else
+          returncode=$(grep "Child status" ${runlog}.watch.log | awk -F: '{ print $2 }');
+        fi
+      fi
+      echo "$tool,$testname,$threads,${races:-0},${runtime:-0},${mem:-0},${returncode:-0}" >> "$LOGFILE"
+      mv "$logname" "${runlog}.var.log" "${runlog}.watch.log" -t "$SAVELOGS" 2> /dev/null
+      cp "$LOGFILE" "$BACKUP_DIR"
 
-  done
-  timerEnd=$(date +%s%6N);
-  totalTime=$(echo "scale=3; ($timerEnd-$timerStart)/1000000"|bc);
-  echo "time take by $tool is $totalTime seconds" | tee -a $REPORT
+    done #End Kernels loop
+    timerEnd=$(date +%s%6N);
+    runTime=$(echo "scale=3; ($timerEnd-$timerStart)/1000000"|bc);
+    totalTime=$(echo "scale=3; ($compileTime+$runTime)"|bc);
+    echo "time take by $tool with $threads threads is $totalTime seconds" | tee -a $REPORT
+    if [ $tool == "llov" ]; then break; fi
+  done #End threads loop
 
   make clean;
-done
+done #End Tools loop
 
 mv "$REPORT" -t "$BACKUP_DIR" 2> /dev/null
 
