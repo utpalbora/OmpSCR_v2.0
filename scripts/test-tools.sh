@@ -5,9 +5,9 @@
 export OMP_DISPLAY_ENV=false
 LOG_DIR=log
 REPORT=${LOG_DIR}/OmpSCR.log
+BACKUP_DIR=$LOG_DIR/$(date +%Y-%m-%d-%H-%M)
 
-#TIMEOUTCMD=${TIMEOUTCMD:-"timeout"}
-RUNCMD=${RUNCMD:-"/home/utpal/runsolver/src/runsolver"}
+RUNCMD=${RUNCMD:-"./runsolver/runsolver"}
 
 ARCHER=${ARCHER:-"clang-archer"}
 SWORD=${SWORD:-"clang-sword"}
@@ -62,11 +62,16 @@ validate_tool_path () {
 TOOLS=()
 ITERATIONS=()
 TIMEOUTMIN=()
-while getopts "n:x:s:" opt; do
+OMPTHREADS=()
+while getopts "n:x:s:t:" opt; do
   case $opt in
     x)  if validate_tool_path "${OPTARG}"; then
           TOOLS+=(${OPTARG});
         else echo "Invalid tool name ${OPTARG}" && exit 1;
+        fi ;;
+    t)  if [[ ${OPTARG} -gt 0 ]]; then
+          OMPTHREADS+=${OPTARG};
+        else echo "Number of OpenMP threads must be greater than 1";
         fi ;;
     n)  if [[ ${OPTARG} -gt 0 ]]; then
           ITERATIONS=${OPTARG};
@@ -81,11 +86,15 @@ done
 
 if [[ ! ${#TOOLS[@]} -gt 0 ]]; then
   #TOOLS=( 'archer' 'clang' 'drd' 'gnu' 'helgrind' 'intel' 'inspxe-cl' 'llov' 'romp' 'sword' 'tsan-llvm' 'tsan-gcc')
-  TOOLS=( 'archer' 'drd' 'helgrind' 'llov' 'sword' 'tsan-llvm' 'tsan-gcc')
+  TOOLS=( 'archer' 'drd' 'helgrind' 'llov' 'tsan-llvm' 'tsan-gcc')
 fi
-if [[ ! $ITERATIONS -gt 0 ]]; then
-  ITERATIONS=10
+if [[ ! $TIMEOUTMIN -gt 0 ]]; then
+  TIMEOUTMIN=10
 fi
+if [[ ! ${#OMPTHREADS[@]} -gt 0 ]]; then
+  OMPTHREADS=( '4' '8' '10' '14' '16' '18' '20' '22' '24' '36' '44' '56' '72' '88' '90' '96' '112' '128' '180' '160' '224' '256' '448' )
+fi
+
 TIMEOUTSEC=$((TIMEOUTMIN*60))
 RUNFLAGS=" -C ${TIMEOUTSEC}00 -W ${TIMEOUTSEC} --phys-cores 0-71 "
 TESTPARAM="-test"
@@ -93,8 +102,9 @@ TESTPARAM="-test"
 ULIMITS=$(ulimit -s)
 ulimit -s unlimited
 
-#for tool in "archer" "clang" "drd" "gnu" "helgrind" "intel" "inspxe-cl" "llov" "romp" "sword" "tsan-llvm" "tsan-gcc"; do
-#for tool in "archer" "drd" "helgrind" "llov" "sword" "tsan-llvm" "tsan-gcc"; do
+# For the time being, fix number of threads to 72
+export OMP_NUM_THREADS=72
+
 for tool in "${TOOLS[@]}"; do
   LOGFILE=$LOG_DIR/${tool}.csv
 
@@ -104,6 +114,8 @@ for tool in "${TOOLS[@]}"; do
   fi
   cp config/templates/${tool}.cf.mk config/templates/user.cf.mk;
   make clean;
+  SAVELOGS=$BACKUP_DIR/$tool
+  mkdir -p $SAVELOGS
 
   echo "tool,testcase,races,runtime,memory(rss),exitcode" > "$LOGFILE"
 
@@ -112,7 +124,7 @@ for tool in "${TOOLS[@]}"; do
   for exname in $(find bin -type f -name "*${tool}"); do
     testname=${exname##*/}
     runlog="$LOG_DIR/${testname}"
-    testname=${testname%%.*}
+    testname=${testname%.*.*}
     logname="${runlog}.log"
     OUTFLAGS=" -w ${runlog}.watch.log -v ${runlog}.var.log -o $logname "
 
@@ -125,9 +137,6 @@ for tool in "${TOOLS[@]}"; do
       intel)
         $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
         races="";;
-      archer)
-        $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM;
-        races=$(grep -ce 'WARNING: ThreadSanitizer: data race' $logname);;
       drd)
         $RUNCMD $RUNFLAGS $OUTFLAGS $VALGRIND --tool=drd --check-stack-var=yes "./$exname" $TESTPARAM;
         races=$(grep -ce 'Conflicting .* by thread' $logname);;
@@ -153,10 +162,12 @@ for tool in "${TOOLS[@]}"; do
         fi;
         $RUNCMD $RUNFLAGS $OUTFLAGS "./$exname" $TESTPARAM
         instrtime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
-        $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_ANALYSIS --analysis-tool $SWORD_RACE_ANALYSIS --executable $exname --traces-path "$LOG_DIR/sword_data" --report-path "$LOG_DIR/sword_report"
+        $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_ANALYSIS --analysis-tool $SWORD_RACE_ANALYSIS --executable "$exname" --traces-path "$LOG_DIR/sword_data" --report-path "$LOG_DIR/sword_report"
         analysistime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
-        $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_REPORT --executable $exname --report-path "$LOG_DIR/sword_report"
+        $RUNCMD $RUNFLAGS $OUTFLAGS $SWORD_REPORT --executable "$exname" --report-path "$LOG_DIR/sword_report"
         races=$(grep -ce 'WARNING: SWORD: data race' $logname);;
+      archer)
+        ;&
       tsan-gcc)
         ;&
       tsan-llvm)
@@ -164,16 +175,18 @@ for tool in "${TOOLS[@]}"; do
         races=$(grep -ce 'WARNING: ThreadSanitizer: data race' $logname);;
     esac
     mem=$(grep "maximum resident set size" ${runlog}.watch.log | sed -E 's/.*[[:space:]]([[:digit:]]+)/\1/')
-    runtime=$(grep "Real time" ${runlog}.watch.log | awk -F: '{ print $2 }')
+    runtime=$(grep "WCTIME=" ${runlog}.var.log | awk -F= '{ print $2 }');
     runtime=$(echo "scale=3; ($runtime+${instrtime:-0}+${analysistime:-0})"|bc)
     if [ ! -f ${runlog}.var.log ]; then
       returncode=0;
     elif [ $(grep -ce "^TIMEOUT=true" ${runlog}.var.log) -eq 0 ]; then
-      returncode=$(grep "Child status" ${runlog}.watch.log | awk -F: '{ print $2 }');
+      returncode=$(grep "EXITSTATUS=" ${runlog}.var.log | awk -F= '{ print $2 }');
     else
-      returncode=124;
+      returncode=$(grep "Child status" ${runlog}.watch.log | awk -F: '{ print $2 }');
     fi
     echo "$tool,$testname,${races:-0},$runtime,$mem,$returncode" >> "$LOGFILE"
+    mv "$logname" "${runlog}.var.log" "${runlog}.watch.log" -t "$SAVELOGS" 2> /dev/null
+    cp "$LOGFILE" "$BACKUP_DIR"
 
   done
   timerEnd=$(date +%s%6N);
@@ -182,5 +195,7 @@ for tool in "${TOOLS[@]}"; do
 
   make clean;
 done
+
+mv "$REPORT" -t "$BACKUP_DIR" 2> /dev/null
 
 ulimit -s "$ULIMITS"
