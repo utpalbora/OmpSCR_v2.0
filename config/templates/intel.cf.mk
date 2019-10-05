@@ -110,12 +110,12 @@ OSCR_FF=ifort
 #
 # 3.3. Flag/s needed to activate OpenMP pragmas recognition
 #
-OSCR_F_OMPFLAG=-openmp
+OSCR_F_OMPFLAG=-qopenmp
 
 #
 # 3.4. Flag/s needed for serial compilation (No OpenMP)
 #
-OSCR_F_OMPSTUBSFLAG=-openmp_stubs
+OSCR_F_OMPSTUBSFLAG=-qopenmp-stubs
 
 #
 # 3.5. (Optional)

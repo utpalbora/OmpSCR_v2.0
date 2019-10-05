@@ -100,7 +100,7 @@ OSCR_CPP_OTHERS=-g
 #	A value of "y" will enable Fortran90/95 source code compilation
 #	A value of "n" will unable Fortran90/95 source code compilation
 #
-OSCR_USE_F=y
+OSCR_USE_F=n
 
 #
 # 3.2. The name of your Frotran90/95 compiler or front-end

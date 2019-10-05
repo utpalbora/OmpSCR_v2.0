@@ -26,7 +26,7 @@ OSCR_USE_C=y
 #
 # 1.2. The name of your C compiler or front-end
 #
-OSCR_CC=clang-sword
+OSCR_CC=timeout 1m clang-sword
 
 #
 # 1.3. Flag/s needed to activate OpenMP pragmas recognition
@@ -66,7 +66,7 @@ OSCR_USE_CPP=y
 #
 # 2.2. The name of your C++ compiler or front-end
 #
-OSCR_CPPC=clang-sword++
+OSCR_CPPC=timeout 1m clang-sword++
 
 #
 # 2.3. Flag/s needed to activate OpenMP pragmas recognition

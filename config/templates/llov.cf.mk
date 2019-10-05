@@ -26,7 +26,7 @@ OSCR_USE_C=y
 #
 # 1.2. The name of your C compiler or front-end
 #
-OSCR_CC=/home/utpal/LLVMOmpVerify/build/bin/clang -Xclang -load -Xclang /home/utpal/LLVMOmpVerify/build/lib/OpenMPVerify.so
+OSCR_CC=/home/utpal/LLVMOmpVerify/build1/bin/clang -Xclang -load -Xclang /home/utpal/LLVMOmpVerify/build1/lib/OpenMPVerify.so
 
 #
 # 1.3. Flag/s needed to activate OpenMP pragmas recognition
@@ -66,7 +66,7 @@ OSCR_USE_CPP=y
 #
 # 2.2. The name of your C++ compiler or front-end
 #
-OSCR_CPPC=/home/utpal/LLVMOmpVerify/build/bin/clang++ -Xclang -load -Xclang /home/utpal/LLVMOmpVerify/build/lib/OpenMPVerify.so
+OSCR_CPPC=/home/utpal/LLVMOmpVerify/build1/bin/clang++ -Xclang -load -Xclang /home/utpal/LLVMOmpVerify/build1/lib/OpenMPVerify.so
 
 #
 # 2.3. Flag/s needed to activate OpenMP pragmas recognition
