@@ -33,8 +33,9 @@ Runsolver can be found [here](https://github.com/utpalbora/runsolver.git).
 > > `` ./scripts/test-tools.sh -x tsan-llvm -t 32  ``
 
 ## Contact
-If you have any query, please contact "Utpal Bora" '<cs14mtech11017>'@iith.ac.in.  
+If you have any query, please contact "Utpal Bora" &lt;cs14mtech11017&gt;@iith.ac.in.  
 Please you have modified the benchmark as per your need, kindly send a pull request.  
 
 Regards,  
 Utpal
+
