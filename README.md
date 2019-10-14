@@ -1,8 +1,8 @@
 # OmpSCR v2.0 Benchmark suite
 
-A benchmark suite for high performance computing using OpenMPv3.0 APIs.  
+A benchmark suite for high performance computing using OpenMP v3.0 APIs.  
 The benchmark consisting of C/C++ and FORTRAN kernels demonstrating  
-usefulness andpitfalls of parallel programming paradigm with both correct  
+usefulness and pitfalls of parallel programming paradigm with both correct  
 and incorrect parallelization strategies.  
 The kernels ranges from parallelization of simple loops with dependences  
 to more complex parallelimplemantations of algorithms, such as  
@@ -32,3 +32,9 @@ Runsolver can be found [here](https://github.com/utpalbora/runsolver.git).
 > >   To run TSan-LLVM with 32 OpenMP threads, run as:-
 > > `` ./scripts/test-tools.sh -x tsan-llvm -t 32  ``
 
+## Contact
+If you have any query, please contact "Utpal Bora" <cs14mtech11017>@iith.ac.in.  
+Please you have modified the benchmark as per your need, kindly send a pull request.  
+
+Regards,  
+Utpal
