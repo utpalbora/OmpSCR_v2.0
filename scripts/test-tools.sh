@@ -133,6 +133,7 @@ for ITER in $(seq 1 "$ITERATIONS"); do
       for exname in $(find bin -type f -name "*${tool}"); do
         testname=${exname##*/}
         runlog="$LOG_DIR/${ITER}.${testname}"
+        llovlog="$LOG_DIR/${testname}.log"
         testname=${testname%.*.*}
         logname="${runlog}.log"
         OUTFLAGS=" -w ${runlog}.watch.log -v ${runlog}.var.log -o $logname "
@@ -159,7 +160,7 @@ for ITER in $(seq 1 "$ITERATIONS"); do
             $RUNCMD $RUNFLAGS $OUTFLAGS $VALGRIND --tool=helgrind "./$exname" $TESTPARAM;
             races=$(grep -ce 'Possible data race' $logname);;
           llov)
-            races=$(grep -ce 'Data Race detected' $logname);
+            races=$(grep -ce 'Data Race detected' $llovlog);
             runtime=$compileTime;
             mem=0;
             returncode=0;
@@ -200,7 +201,7 @@ for ITER in $(seq 1 "$ITERATIONS"); do
           fi
         fi
         echo "$tool,$testname,$threads,${races:-0},${runtime:-0},${mem:-0},${returncode:-0}" >> "$LOGFILE"
-        mv "$logname" "${runlog}.var.log" "${runlog}.watch.log" -t "$SAVELOGS" 2> /dev/null
+        mv "$logname" "${runlog}.var.log" "${runlog}.watch.log" "$llovlog" -t "$SAVELOGS" 2> /dev/null
         cp "$LOGFILE" "$BACKUP_DIR"
 
       done #End Kernels loop
