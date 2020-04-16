@@ -32,6 +32,22 @@ Runsolver can be found [here](https://github.com/utpalbora/runsolver.git).
 > >   To run TSan-LLVM with 32 OpenMP threads, run as:-
 > > `` ./scripts/test-tools.sh -x tsan-llvm -t 32  ``
 
+```
+./scripts/test-tools.sh -x toolname
+-x : tool name (llov, archer sword, tsan-llvm, drd, helgrind)
+-n : iteration count
+-t : thread count
+-s : timeout in seconds
+```
+
+To run llov 5 times, execute  
+`./scripts/test-tools.sh -x llov -n 5`
+
+To run multiple tools, execute  
+`./scripts/test-tools.sh -x llov -x drd -x helgrind -n 1 -t 8 -s 10`
+
+Results are stored at `OmpSCR_v2.0/log` directory.
+
 ## Contact
 If you have any query, please contact "Utpal Bora" &lt;cs14mtech11017&gt;@iith.ac.in.  
 Please you have modified the benchmark as per your need, kindly send a pull request.  
